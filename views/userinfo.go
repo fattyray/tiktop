@@ -19,14 +19,14 @@ func UserInfo(c *gin.Context) {
 	token := c.Query("token")
 	_, err := midware.Gettoken(token)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status_code": 3, "status_msg": "jwt error"})
+		c.JSON(http.StatusOK, gin.H{"status_code": 3, "status_msg": "null"})
 		return
 	}
 
 	dsn := "wcr123:123456@tcp(127.0.0.1:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local"
 	dbx, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status_code": -1, "status_msg": "failed to connect database"})
+		c.JSON(http.StatusOK, gin.H{"status_code": -1, "status_msg": "null"})
 		return
 	}
 	user := db.User{}
@@ -34,7 +34,7 @@ func UserInfo(c *gin.Context) {
 	result := dbx.Where("Userid = ?", userid).First(&user)
 	//resultx := dbx.Where("Userid = ?", token_id).First(&jwt_user)
 	if result.Error != nil {
-		c.JSON(http.StatusOK, gin.H{"status_code": -2, "status_msg": "no such user"})
+		c.JSON(http.StatusOK, gin.H{"status_code": -2, "status_msg": "null"})
 		return
 	}
 	type userdata struct {
@@ -51,10 +51,12 @@ func UserInfo(c *gin.Context) {
 
 	jsonData, err1 := json.Marshal(myinfo)
 	if err1 != nil {
-		c.JSON(http.StatusOK, gin.H{"status_code": -5, "status_msg": "json.Marshal error"})
+		c.JSON(http.StatusOK, gin.H{"status_code": -5, "status_msg": "null"})
 	}
 	fmt.Println(string(jsonData))
-	c.JSON(http.StatusOK, gin.H{"status_code": 0, "status_msg": "OK", "user": string(jsonData)})
+	//这个是要等所以的社交信息填好之后才传入user
+	//c.JSON(http.StatusOK, gin.H{"status_code": 0, "status_msg": "string", "user": string(jsonData)})
+	c.JSON(http.StatusOK, gin.H{"status_code": 0, "status_msg": "string"})
 	return
 
 }
