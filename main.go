@@ -18,7 +18,7 @@ func main() {
 	}
 	//启动 gin路由
 	r := gin.Default()
-	auth := midware.Jwt2r()
+	//auth := midware.Jwt2r()
 	//用啦存放静态文件的
 	r.StaticFS("/static", http.Dir("./static"))
 	//设置组
@@ -26,10 +26,14 @@ func main() {
 
 	//下面分别是基本API
 	//1.登录相关
-	Douyin_router.GET("/user/", auth, views.UserInfo)
+	Douyin_router.GET("/user/", midware.Jwt2r(), views.UserInfo)
 	Douyin_router.POST("/user/register/", views.Register)
 	Douyin_router.POST("/user/login/", views.Login)
+
 	//2.视频流相关
+	Douyin_router.GET("/feed/", views.Feed)
+	Douyin_router.POST("/publish/action/", midware.Jwt2r(), views.PublishAction)
+	Douyin_router.GET("/publish/list/", midware.Jwt2r(), views.PublishList)
 
 	//互动API
 

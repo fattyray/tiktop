@@ -4,12 +4,19 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"tiktop/sql_dsn"
 )
+
+type Response struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
+}
 
 type User struct {
 	Userid   uint
 	Username string `gorm:"type:varchar(100)"`
 	Password string `gorm:"type:varchar(100)"`
+
 	gorm.Model
 }
 type Video struct {
@@ -41,8 +48,9 @@ type Like struct {
 
 func Init_db() error {
 	// 连接数据库
-	//这里后续改成你们电脑里的数据库
-	dsn := "wcr123:123456@tcp(127.0.0.1:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local"
+	// 去 sql_dsn 里面修改 电脑数据库
+	//dsn := "root:123456@(127.0.0.1:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := sql_dsn.GetDsn()
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return err

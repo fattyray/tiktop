@@ -1,6 +1,7 @@
 package midware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -16,23 +17,39 @@ func Jwt2r() gin.HandlerFunc {
 	return func(x *gin.Context) {
 		var code int
 		code = 200
-		token := x.Query("token")
+		//token := x.Query("token")
+		token := x.PostForm("token")
+		if token == "" {
+			token = x.Query("token")
+		}
 
 		if token == "" {
 			code = 401
-		} else {
-			claims, err := Gettoken(token)
-			if err != nil {
-				code = 402
-			} else if time.Now().Unix() > claims.ExpiresAt.Unix() {
-				code = 403
-			}
+			x.JSON(http.StatusUnauthorized, http.Response{StatusCode: code})
+
+			return
+		}
+
+		claims, err := Gettoken(token)
+		if err != nil {
+			fmt.Println(err.Error())
+			code = 402
+		} else if time.Now().Unix() > claims.ExpiresAt.Unix() {
+			code = 403
 		}
 		if code != 200 {
 			x.JSON(http.StatusUnauthorized, http.Response{StatusCode: code})
 
 			return
 		}
+
+		// 获取 userid
+		userid := claims.Userid
+		fmt.Println(userid)
+		x.Set("user_id", userid)
+		fmt.Println(x.Query("user_id"))
+		fmt.Println("----------get userid--------\n")
+
 		x.Next()
 	}
 }
