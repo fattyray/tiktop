@@ -2,42 +2,18 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"os"
-	"tiktop/db"
-	"tiktop/midware"
-	"tiktop/views"
+	"tiktop/initialize"
 )
 
 func main() {
-	// 初始化数据库
-	err := db.Init_db()
-	//出错就结束
+	err := initialize.InitDB()
 	if err != nil {
 		os.Exit(-1)
 	}
-	//启动 gin路由
 	r := gin.Default()
-	//auth := midware.Jwt2r()
-	//用啦存放静态文件的
-	r.StaticFS("/static", http.Dir("./static"))
-	//设置组
-	Douyin_router := r.Group("/douyin")
 
-	//下面分别是基本API
-	//1.登录相关
-	Douyin_router.GET("/user/", midware.Jwt2r(), views.UserInfo)
-	Douyin_router.POST("/user/register/", views.Register)
-	Douyin_router.POST("/user/login/", views.Login)
+	initRouter(r)
 
-	//2.视频流相关
-	Douyin_router.GET("/feed/", views.Feed)
-	Douyin_router.POST("/publish/action/", midware.Jwt2r(), views.PublishAction)
-	Douyin_router.GET("/publish/list/", midware.Jwt2r(), views.PublishList)
-
-	//互动API
-
-	//社交接口（尽量完成）
-
-	r.Run()
+	r.Run("192.168.195.1:8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

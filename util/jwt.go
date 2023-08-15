@@ -1,4 +1,4 @@
-package midware
+package util
 
 import (
 	"github.com/golang-jwt/jwt/v4"
@@ -6,7 +6,7 @@ import (
 )
 
 type MyClaims struct {
-	Userid   string `json:"userid"`
+	UserId   string `json:"userid"`
 	Password string `json:"password"`
 	jwt.RegisteredClaims
 }
@@ -14,9 +14,9 @@ type MyClaims struct {
 var MySecret = []byte("字节后端小分队")
 
 // 生成token
-func CreateToken(userid string, password string) (string, error) {
+func CreateToken(userId string, password string) (string, error) {
 	claim := MyClaims{
-		Userid:   userid,
+		UserId:   userId,
 		Password: password,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(1) * 8)),
