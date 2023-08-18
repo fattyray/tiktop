@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -43,7 +42,8 @@ func Feed(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status_code": -1, "status_msg": "Fail to get the number of video."})
 		return
 	}
-	fmt.Println(numVideo)
+	//fmt.Println(numVideo)
+
 	// 如果是空的
 	if numVideo == 0 {
 		// 没有满足条件的视频
@@ -65,7 +65,7 @@ func Feed(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(LikeVideoList)
+	//fmt.Println(LikeVideoList)
 
 	// 评论信息获得
 	CommentVideoList, errComment := service.QueryCommentCountListByVideoIdList(&videoIdList)
@@ -77,7 +77,7 @@ func Feed(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(CommentVideoList)
+	//fmt.Println(CommentVideoList)
 
 	// 点赞与否
 	// 登录状态判断
