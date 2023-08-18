@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"sort"
 	"tiktop/entity"
 	"tiktop/global"
 	"tiktop/util"
@@ -67,6 +68,21 @@ func getFollowUserIdListByUserId(userId int64) (followUserIdList []int64, err er
 	if global.DB.Model(&entity.Follow{}).Select("follow_userid").Where("user_id=?", userId).Find(&followUserIdList).Error != nil {
 		err = errors.New("follow userid query failed")
 		return nil, err
+	}
+	return
+}
+
+// 根据用户id以及给定作者id列表返回关注列表情况
+func ParseFollowListByUserIdFormUserId(userId int64, authorIdList *[]int64) (isFollowList []bool, err error) {
+	var followUserIdList []int64
+	followUserIdList, err = getFollowUserIdListByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+	sort.Slice(followUserIdList, func(i, j int) bool { return followUserIdList[i] < followUserIdList[j] })
+	isFollowList = make([]bool, len(*authorIdList))
+	for i, authorId := range *authorIdList {
+		isFollowList[i] = FindInt64(authorId, &followUserIdList)
 	}
 	return
 }

@@ -9,13 +9,25 @@ import (
 )
 
 // 根据视频id列表查询评论数量列表
-func QueryCommentCountListByVideoIdList(videoIdList *[]int64) (commentCountList []entity.VideoCommentCnt, err error) {
-	result := global.DB.Model(&entity.Comment{}).Select("video_id", "count(video_id) as comment_cnt").Where("video_id in ?", *videoIdList).Group("video_id").Find(&commentCountList)
+func QueryCommentCountListByVideoIdList(videoIdList *[]int64) ([]entity.VideoCommentCnt, error) {
+	var getCommentCountList []entity.VideoCommentCnt
+	result := global.DB.Model(&entity.Comment{}).Select("video_id", "count(video_id) as comment_cnt").Where("video_id in ?", *videoIdList).Group("video_id").Find(&getCommentCountList)
 	if result.Error != nil {
-		err = errors.New("likesList query failed")
-		return
+		err := errors.New("commentList query failed")
+		return nil, err
 	}
-	return
+	// 找数据找齐了
+	if len(*videoIdList) == len(getCommentCountList) {
+		return getCommentCountList, nil
+	}
+	// 数据不全，误差部分补全为0
+	var commentCountList []entity.VideoCommentCnt
+	commentCountList = make([]entity.VideoCommentCnt, len(*videoIdList))
+	for i, videoId := range *videoIdList {
+		commentCountList[i].VideoId = videoId
+		commentCountList[i].CommentCnt = FindVideoIdFromVideoCommentCntList(videoId, &getCommentCountList)
+	}
+	return commentCountList, nil
 }
 
 // 增加评论

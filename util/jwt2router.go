@@ -3,30 +3,29 @@ package util
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"time"
+	"tiktop/entity"
 )
 
 func Jwt2r() gin.HandlerFunc {
-	return func(x *gin.Context) {
-		var code int
-		code = 200
-		token := x.Query("token")
-
+	return func(c *gin.Context) {
+		token := c.PostForm("token")
 		if token == "" {
-			code = 401
-		} else {
-			claims, err := Gettoken(token)
-			if err != nil {
-				code = 402
-			} else if time.Now().Unix() > claims.ExpiresAt.Unix() {
-				code = 403
-			}
+			token = c.Query("token")
 		}
-		if code != 200 {
-			x.JSON(http.StatusUnauthorized, http.Response{StatusCode: code})
-
+		if token == "" {
+			c.JSON(http.StatusBadRequest, entity.Response{
+				StatusCode: 1, StatusMsg: "Not login",
+			})
 			return
 		}
-		x.Next()
+		_, errToken := Gettoken(token)
+		if errToken != nil {
+			c.JSON(http.StatusBadRequest, entity.Response{
+				StatusCode: 1, StatusMsg: errToken.Error(),
+			})
+			return
+		}
+
+		c.Next()
 	}
 }

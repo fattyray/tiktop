@@ -1,9 +1,28 @@
 package service
 
 import (
+	"fmt"
+	"os/exec"
 	"tiktop/entity"
 	"tiktop/global"
 )
+
+// GetCoverFromVideo 根据视频生成封面图片
+func GetCoverFromVideo(videoPath, coverPath string) error {
+	cmd := exec.Command("ffmpeg",
+		"-i", videoPath, "-r", "1",
+		"-vframes", "1",
+		"-f", "image2",
+		coverPath,
+	)
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("生成封面失败：%s\n%s", err, output)
+	}
+
+	return nil
+}
 
 // 查询视频id列表
 func QueryVideoIdListByUserId(userId int64) (videoIdList []int64, err error) {

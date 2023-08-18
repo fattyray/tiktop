@@ -2,19 +2,32 @@ package service
 
 import (
 	"errors"
+	"sort"
 	"tiktop/entity"
 	"tiktop/global"
 	"tiktop/util"
 )
 
 // 获取每个视频的点赞数量
-func QueryLikeCountListByVideoIdList(videoIdList *[]int64) (likeCountList []entity.VideoLikeCnt, err error) {
-	result := global.DB.Model(&entity.Like{}).Select("video_id", "count(video_id) as like_cnt").Where(map[string]interface{}{"video_id": *videoIdList}).Group("video_id").Find(&likeCountList)
+func QueryLikeCountListByVideoIdList(videoIdList *[]int64) ([]entity.VideoLikeCnt, error) {
+	var getLikeCountList []entity.VideoLikeCnt
+	result := global.DB.Model(&entity.Like{}).Select("video_id", "count(video_id) as like_cnt").Where(map[string]interface{}{"video_id": *videoIdList}).Group("video_id").Find(&getLikeCountList)
 	if result.Error != nil {
-		err = errors.New("likesList query failed")
-		return
+		err := errors.New("likesList query failed")
+		return nil, err
 	}
-	return
+	// 找数据找齐了
+	if len(*videoIdList) == len(getLikeCountList) {
+		return getLikeCountList, nil
+	}
+	// 数据不全，误差部分补全为0
+	var likeCountList []entity.VideoLikeCnt
+	likeCountList = make([]entity.VideoLikeCnt, len(*videoIdList))
+	for i, videoId := range *videoIdList {
+		likeCountList[i].VideoId = videoId
+		likeCountList[i].LikeCnt = FindVideoIdFromVideoLikeCntList(videoId, &getLikeCountList)
+	}
+	return likeCountList, nil
 }
 
 // 使用用户id查询其点赞视频的id列表
@@ -22,6 +35,21 @@ func QueryLikeVideoIdListByUserId(userId int64) (likeList []int64, err error) {
 	result := global.DB.Model(&entity.Like{}).Select("video_id").Where("user_id=?", userId).Find(&likeList)
 	if result.Error != nil {
 		return nil, err
+	}
+	return
+}
+
+// 根据用户id以及给定视频id列表返回点赞列表情况
+func ParseLikeVideoListByUserIdFormVideoId(userId int64, videoIdList *[]int64) (isFavoriteList []bool, err error) {
+	var likeList []int64
+	likeList, err = QueryLikeVideoIdListByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+	sort.Slice(likeList, func(i, j int) bool { return likeList[i] < likeList[j] })
+	isFavoriteList = make([]bool, len(*videoIdList))
+	for i, videoId := range *videoIdList {
+		isFavoriteList[i] = FindInt64(videoId, &likeList)
 	}
 	return
 }

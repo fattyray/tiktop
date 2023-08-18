@@ -32,8 +32,9 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusOK,
 		UserLoginResponse{
 			Response: entity.Response{StatusCode: 0, StatusMsg: "Account registered successfully"},
-			UserId:   int64(user.UserId),
-			Token:    tokenx})
+			UserId:   user.UserId,
+			Token:    tokenx,
+		})
 	return
 }
 
@@ -43,17 +44,28 @@ func Login(c *gin.Context) {
 	// 从数据库查询用户信息
 	user, err := service.Login(username, password)
 	if err != nil {
-		c.JSON(http.StatusOK, entity.Response{StatusCode: 1, StatusMsg: "用户名或密码错误"})
+		c.JSON(http.StatusOK,
+			UserLoginResponse{
+				Response: entity.Response{StatusCode: 1, StatusMsg: "用户名或密码错误"},
+			})
 		return
 	}
 	// 生成对应 token
-	tokenx, _ := util.CreateToken(strconv.Itoa(int(user.UserId)), string(password))
+	tokenx, errlog := util.CreateToken(strconv.Itoa(int(user.UserId)), string(password))
+	if errlog != nil {
+		c.JSON(http.StatusOK,
+			UserLoginResponse{
+				Response: entity.Response{StatusCode: 1, StatusMsg: errlog.Error()},
+			})
+		return
+	}
 	// 返回成功并生成响应 json
 	c.JSON(http.StatusOK,
 		UserLoginResponse{
 			Response: entity.Response{StatusCode: 0, StatusMsg: "Login successfully"},
-			UserId:   int64(user.UserId),
-			Token:    tokenx})
+			UserId:   user.UserId,
+			Token:    tokenx,
+		})
 }
 
 func UserInfo(c *gin.Context) {

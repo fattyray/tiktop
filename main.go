@@ -15,5 +15,7 @@ func main() {
 
 	initRouter(r)
 
-	r.Run("192.168.195.1:8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run()
+	// 下面的这个不知道是不是每个电脑都能跑？
+	//r.Run("192.168.195.1:8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

@@ -75,5 +75,9 @@ func UserInfoByUserId(userId int64) (userdata entity.UserData, err error) {
 		totalCnt += like.LikeCnt
 	}
 	userdata.TotalFavorited = totalCnt
+
+	// 默认未登录为 false, 交由接口处理
+	userdata.IsFollow = false
+
 	return
 }
