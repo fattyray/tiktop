@@ -56,10 +56,10 @@ type CommentResponse struct {
 }
 type CommentListResponse struct {
 	Response Response
-	Comments []CommentResponse
+	Comments []CommentResponse `json:"comment_list"`
 }
 
 type FollowListResponse struct {
 	Response Response
-	UserList []UserData
+	UserList []UserData `json:"user_list"`
 }

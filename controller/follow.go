@@ -80,3 +80,8 @@ func FollowerList(c *gin.Context) {
 		UserList: followUserList,
 	})
 }
+
+// 好友列表是关注登录用户的粉丝而已
+func FriendList(c *gin.Context) {
+	FollowerList(c)
+}

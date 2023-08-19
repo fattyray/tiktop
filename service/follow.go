@@ -132,3 +132,25 @@ func GetFollowerListByUserId(userId int64) (followerList []entity.UserData, err 
 	}
 	return
 }
+
+//func GetFriendListByUserId(userId int64) (userList []entity.UserData, err error) {
+//	followerList, err := GetFollowerListByUserId(userId)
+//	if err != nil {
+//		return nil, err
+//	}
+//	for _, follower := range followerList {
+//		flag, err := QueryFollowOrNot(userId, follower.UserId)
+//		if err != nil {
+//			return nil, err
+//		}
+//		if flag {
+//			userInfo, err := UserInfoByUserId(follower.UserId)
+//			userInfo.IsFollow = true
+//			if err != nil {
+//				return nil, err
+//			}
+//			userList = append(userList, userInfo)
+//		}
+//	}
+//	return
+//}

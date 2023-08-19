@@ -59,6 +59,7 @@ func Login(c *gin.Context) {
 			})
 		return
 	}
+	c.Set("currentId", user.UserId)
 	// 返回成功并生成响应 json
 	c.JSON(http.StatusOK,
 		UserLoginResponse{

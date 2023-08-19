@@ -16,14 +16,14 @@ func Jwt2r() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, entity.Response{
 				StatusCode: 1, StatusMsg: "Not login",
 			})
-			return
+			c.Abort()
 		}
 		_, errToken := Gettoken(token)
 		if errToken != nil {
 			c.JSON(http.StatusBadRequest, entity.Response{
 				StatusCode: 1, StatusMsg: errToken.Error(),
 			})
-			return
+			c.Abort()
 		}
 
 		c.Next()
