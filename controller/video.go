@@ -53,7 +53,7 @@ func Publish(c *gin.Context) {
 	coverName := name + ".jpg"
 
 	videoSavePath := filepath.Join(global.PATH_VIDEO, videoName)
-	//coverSavePath := filepath.Join(global.PATH_COVER, coverName)
+	coverSavePath := filepath.Join(global.PATH_COVER, coverName)
 
 	err = c.SaveUploadedFile(file, videoSavePath)
 	if err != nil {
@@ -64,7 +64,7 @@ func Publish(c *gin.Context) {
 		return
 	}
 
-	//err = service.GetCoverFromVideo(videoSavePath, coverSavePath)
+	err = service.GetCoverFromVideo(videoSavePath, coverSavePath)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, entity.Response{
