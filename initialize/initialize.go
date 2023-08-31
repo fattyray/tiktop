@@ -10,7 +10,7 @@ import (
 
 func InitDB() error {
 	// 连接数据库
-	dsn := "root:123456@tcp(127.0.0.1:3306)/tiktop?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:root1234@tcp(127.0.0.1:13306)/tiktop?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return err
@@ -21,6 +21,7 @@ func InitDB() error {
 	db.AutoMigrate(&entity.Comment{})
 	db.AutoMigrate(&entity.Follow{})
 	db.AutoMigrate(&entity.Like{})
+	db.AutoMigrate(&entity.Message{})
 	fmt.Println("db init")
 	//u1 := User{Id: 1, Name: "张三", Gender: "男", Hobby: "学习"}
 	//db.Create(&u1) //创建
